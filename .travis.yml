@@ -1,32 +1,55 @@
 language: go
-
-services:
-  - docker
-
 go:
   - 1.12.x
 
-os:
-  - linux
-  - osx
-  - windows
-
 stages:
   - compile
-  - test
   - package
-  - deploy
 
+####################
+# OS Configuration #
+####################
+
+linux: &linux
+  os: linux
+  dist: xenial
+
+osx: &osx
+  os: osx
+
+windows: &windows
+  os: windows
+
+#######################
+# Tasks Configuration #
+#######################
+
+compile-task: &compile-task
+  script:
+    - go mod download
+    - go run build.go build all
+
+########
+# Jobs #
+########
 
 jobs:
   include:
     - stage: compile
-      script:
-        - go mod download
-        - go run build.go build all
+      <<: *compile-task
+      <<: *linux
+
+    - <<: *osx
+      <<: *compile-task
+
+
+    - <<: *windows
+      <<: *compile-task
 
     - stage: package
       name: "Build Docker image"
+      services:
+        - docker
       script:
 #        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t off-proxy ./package/docker
