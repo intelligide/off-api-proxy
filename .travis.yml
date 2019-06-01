@@ -9,7 +9,11 @@ stages:
 
 env:
   global:
-    - secure: "mPmk4cHwS6KBQv2WULlmDyFHbpXAv0VWbMXbbW2+EY4ad3HDPkKZTGW4N/5lS6VpqrWvfCJiSJURWLHFqm0CK8BCgtUOT3vcOpc6LSG0mJsfd995xYz0mBoyYwEZN8ba6MfFt6x1VJIrfshReqnWFapDI3EneNFKFLzTGuoYGwK11jBCrS4inMMzAm4gILain5MFCti6GwleNLE7itwpA+JKWsjEtJW8knDTcSbO7r33CZ1uuqOoROOOBGuU5/wsaS4xEez3K+zBRMY8UHM76RG+Lkmt81giSSEPDAlteTlUtv3xqWTRGuKbRJZn9wyk2Kany7UyiVtXNnbYjG9SuhLhIjxg/mtsXywCr0luAHrKAfPSyzcUR/DBdwdPw+dJAEi7GDrrDXdr+zXB2iCj13NU18C4hVBlY2PER9xI3p7FXz1BTglaALkEmiiiu2q6UsyMzTJlUddC0TPdElUR8JcAscYNG3r0MtBPYAeKoTh2Htav98mRMhfXxYvuaq7GQUHAOvAZcWR1a+yVqgIL9hf44N3rouAjkyXZO/LZ9rQeolj4C47vQZ61rH6c+3uchIb7IMQv1LI5YSA2QXkZ33x515Z9cwTrpAiIuGcE7dvxfFqucb2ny24tSdDl/BBwPPt7yegnPiAKTzY/BjLPNSV9Vrqhw8ShPQGJxudLgdM="
+    - GITHUB_API_KEY:
+      - secure: "ZdFHzMt9ljCZkiEgNpnVuRbK+fGjosJw+xn5sQABwoAuYj45srj55BPSGM6yarBHkDYfYvrW/9QpY+p+ul20goCWejD9DvPPNiCMOGEHOrD4xfp/Bg51zNFxDQJKYAjKp1M8qIokJ7oJaKBW065KSUyxkEo0HLsYrndJubGUDbzbXY7vRY3KVCBJQhrKgvgMa0sd+AKlbIknL2S5AjFyw/q0NPJ64Yp5IZ4orjL0DP+Vg0UrWzofalPKbsEsNyqQM8T2kvB9XaKY1aRzJ7+3pgzenTO3Ty0n2hYdmT/XhbcvYN3bMchUX2lMZiJqOD/A05Z3YdUXjjRr5J7tyVqLdq4n5oAmLdap96mrX3Dql1chpBaCRV5d/AT2cd2UbPbYXcZ0dR5k+ZPAqDctuTucbJ7bg6UoMjyznOzmFd80ZMRY6Uli0JHHUBOIJLSdiHvhOgs0XgBzVIP5QE2P3A/W2e+1UKoHyJy9TjXthjdnw1zalAQlgi7L1Kl/C9H/yqBgb92qzFhk8M3M1Z6gIT69YMMA31yaXdVU2Xh/QtV3BCQQ98sqvLnV6MVrUzSsn0uoae/IZRrL+8M3ceQNpSHdhNUWTFuMCmEFqY8ZryDqvaGud/p2jA4GCFOhmZpR1ro1zlzRFgfxLYBfugwCgAbXBQ/JamLHU9Raq6AirT/JyBc="
+    - DOCKER_USERNAME: intelligide
+    - DOCKER_PASSWORD:
+      - secure: "EWwt1GUW05X4Xzic+LN7/CjqW82Mxd/HfMdT1QQKLGVjoSQMMW6TedgVvEFYJwyeEdPvEFsgBOkW9gBCDOj5MsYIJop9JlB9mmQSEehYyz4dQE8H1Hlz5VgEYtBMrHQdiLvetl9gQSG/Yfv4zjUWEx43pz0jy8Iwo49WLCUNttgZbkgv+cvKkCphH2R86mTZsy4GgCt8kj9SBUkCPKCx1/t3tZYEiWgXB9E3uIpGShbd4Wjx5LkLHzr6VbADtPhUZVOUEWWSbs2WJ1gYAnVEV+1KqrGfpzK9gUDb3xjCFkVQBHTqxJ0KGiAbzF0Posbh4iUMFA+KgyMoniuneWTibZH4OT2O39UqslP0vXredE4eF7zrWh6c9oM6tSuxVKMQFbfdii1L1yRjYovOwS84mqcYiNTn18crg4A8kIkIP+iTe/OMVkH6/IjgNIZ9zTKq+4qlMrqhfYQxzTmOSDii/BWG+cLfNtWekJlAS0k6y19OdxnOj4+CSlaBbSM3xLy6vEaNgAONMgASpD+j2KTYi7McbMXRx9DI6HD5xKfhqkDJAAG/0rtdPDtBv2TwVYxPxobII+AL7x8a2eMetjBOmFHJzMtoFo/YCG3Jy7dVlsp1aU3bAz0I7FpTdfYr8byI7yFcfkXoFo12tDC5yei67xvCQjBwKq0/z8ZWH2vlUpM="
 
 ####################
 # OS Configuration #
@@ -71,11 +75,9 @@ jobs:
       services:
         - docker
       script:
-#        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build -t off-proxy .
-        - docker images
-#        - docker tag travis-ci-build-stages-demo $DOCKER_USERNAME/travis-ci-build-stages-demo
-#        - docker push $DOCKER_USERNAME/travis-ci-build-stages-demo
+        - echo "$DOCKER_PASSWORD" | docker login registry.gitlab.com -u "$DOCKER_USERNAME" --password-stdin
+        - docker build -t registry.gitlab.com/$DOCKER_USERNAME/off-proxy:dev .
+        - docker push registry.gitlab.com/$DOCKER_USERNAME/off-proxy:dev
 
     - stage: deploy
       <<: *linux
