@@ -77,8 +77,8 @@ jobs:
         - docker
       script:
         - echo "$DOCKER_PASSWORD" | docker login registry.gitlab.com -u "$DOCKER_USERNAME" --password-stdin
-        - docker build -t registry.gitlab.com/$DOCKER_USERNAME/off-proxy:dev .
-        - docker push registry.gitlab.com/$DOCKER_USERNAME/off-proxy:dev
+        - docker build -t registry.gitlab.com/$DOCKER_USERNAME/off-api-proxy:dev .
+        - docker push registry.gitlab.com/$DOCKER_USERNAME/off-api-proxy:dev
 
     - stage: deploy
       <<: *linux
