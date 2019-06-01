@@ -1,0 +1,20 @@
+provider = "https://world.openfoodfacts.org/"
+
+[cache]
+enabled = true
+expires_after = 60
+cleanup_interval = 20
+max_memory = 100
+
+[logs]
+
+# RFC5424 log message levels.
+# 0 => Emergency: system is unusable
+# 1 => Alert: action must be taken immediately
+# 2 => Critical: critical conditions
+# 3 => Error: error conditions
+# 4 => Warning: warning conditions
+# 5 => Notice: normal but significant condition
+# 6 => Informational: informational messages
+# 7 => Debug: debug-level messages
+level = 5

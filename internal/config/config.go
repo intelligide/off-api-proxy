@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Cache CacheConfig `toml:"cache"`
+	Logs LogConfig `toml:"logs"`
 	Provider string `default:"https://world.openfoodfacts.org/" toml:"provider"`
 	PreFilters []string `toml:"pre-filters"`
 	Filters []string `toml:"filters"`
@@ -19,25 +20,35 @@ type CacheConfig struct {
 	MaxAllocMemory uint `default:"100" toml:"max_memory"` // MiB
 }
 
-func Load() *Config {
+type LogConfig struct {
+	Level int `default:"5" toml:"level"`
+}
 
-	config := &Config {
+var (
+	GlobalConfig *Config
+)
+
+func init() {
+	GlobalConfig = newConfig()
+	t, err := toml.LoadFile("config.toml")
+	if err != nil {
+		beego.Info("Cannot read config.tml. Using default values.")
+	} else {
+		t.Unmarshal(GlobalConfig)
+	}
+}
+
+func newConfig() *Config {
+	return &Config {
 		Cache: CacheConfig{
 			Enabled: true,
 			Expiration: 60,
 			CleanupInterval: 20,
 			MaxAllocMemory: 100,
 		},
+		Logs: LogConfig{
+			Level: 5,
+		},
 		Provider: "https://world.openfoodfacts.org/",
 	}
-
-	t, err := toml.LoadFile("config.toml")
-	if err != nil {
-		beego.Info("Cannot read config.tml. Using default values.")
-	} else {
-		t.Unmarshal(config)
-	}
-
-	return config
 }
-
