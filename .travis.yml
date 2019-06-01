@@ -66,9 +66,9 @@ jobs:
       <<: *osx
       <<: *compile-task
 
-    - name: "Compile on Windows"
-      <<: *windows
-      <<: *compile-task
+#    - name: "Compile on Windows"
+#      <<: *windows
+#      <<: *compile-task
 
     - stage: package
       name: "Build Docker image"
@@ -86,8 +86,8 @@ jobs:
     - <<: *osx
       <<: *github-deploy-task
 
-    - <<: *windows
-      <<: *github-deploy-task
+#    - <<: *windows
+#      <<: *github-deploy-task
 
 install:
   - mkdir -p $HOME/src
