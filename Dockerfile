@@ -15,7 +15,7 @@ COPY --from=builder /src/package/docker/docker-entrypoint.sh /bin/entrypoint.sh
 
 ENV PUID=1000 PGID=1000
 
-RUN apk update && apt-get upgrade && \
+RUN apk update && apk upgrade && \
     apk add --upgrade ca-certificates su-exec && \
     rm -rf /var/cache/apk/*
 
