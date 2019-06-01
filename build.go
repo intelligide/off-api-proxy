@@ -21,7 +21,7 @@ var targets = map[string]gobuilder.Target{
 		BuildPkg:    "github.com/intelligide/off-api-proxy/cmd/off-proxy",
 		BinaryName:  "off-proxy", // .exe will be added automatically for Windows builds
 		ArchiveFiles: []gobuilder.ArchiveFile{
-			{Src: "{{binary}}", Dst: "{{binary}}", Perm: 0755},
+			{Src: "build/bin/{{binary}}", Dst: "{{binary}}", Perm: 0755},
 			{Src: "README.md", Dst: "README.txt", Perm: 0644},
 			{Src: "LICENSE", Dst: "LICENSE.txt", Perm: 0644},
 		},
@@ -44,15 +44,6 @@ var (
 func init() {
 
 	builder.Tags = append(builder.Tags, "purego")
-
-	sep := '='
-	var ldflags []string
-	ldflags = append(ldflags,
-		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Version%c%s", sep, version),
-		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Stamp%c%d", sep, buildStamp()),
-		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.User%c%s", sep, buildUser()),
-		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Host%c%s", sep, buildHost()),
-	)
 }
 
 func main() {
@@ -71,6 +62,18 @@ func main() {
 			log.Println("... build completed in", time.Since(t0))
 		}()
 	}
+
+	proxyTarget := targets["off-proxy"]
+	proxyTarget.Version = version
+	targets["off-proxy"] = proxyTarget
+
+	sep := '='
+	builder.LdFlags = append(builder.LdFlags,
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Version%c%s", sep, version),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Stamp%c%d", sep, buildStamp()),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.User%c%s", sep, buildUser()),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Host%c%s", sep, buildHost()),
+	)
 
 	builder.AddTargets(targets)
 

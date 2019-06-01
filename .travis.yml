@@ -5,6 +5,11 @@ go:
 stages:
   - compile
   - package
+  - deploy
+
+env:
+  global:
+    - secure: "mPmk4cHwS6KBQv2WULlmDyFHbpXAv0VWbMXbbW2+EY4ad3HDPkKZTGW4N/5lS6VpqrWvfCJiSJURWLHFqm0CK8BCgtUOT3vcOpc6LSG0mJsfd995xYz0mBoyYwEZN8ba6MfFt6x1VJIrfshReqnWFapDI3EneNFKFLzTGuoYGwK11jBCrS4inMMzAm4gILain5MFCti6GwleNLE7itwpA+JKWsjEtJW8knDTcSbO7r33CZ1uuqOoROOOBGuU5/wsaS4xEez3K+zBRMY8UHM76RG+Lkmt81giSSEPDAlteTlUtv3xqWTRGuKbRJZn9wyk2Kany7UyiVtXNnbYjG9SuhLhIjxg/mtsXywCr0luAHrKAfPSyzcUR/DBdwdPw+dJAEi7GDrrDXdr+zXB2iCj13NU18C4hVBlY2PER9xI3p7FXz1BTglaALkEmiiiu2q6UsyMzTJlUddC0TPdElUR8JcAscYNG3r0MtBPYAeKoTh2Htav98mRMhfXxYvuaq7GQUHAOvAZcWR1a+yVqgIL9hf44N3rouAjkyXZO/LZ9rQeolj4C47vQZ61rH6c+3uchIb7IMQv1LI5YSA2QXkZ33x515Z9cwTrpAiIuGcE7dvxfFqucb2ny24tSdDl/BBwPPt7yegnPiAKTzY/BjLPNSV9Vrqhw8ShPQGJxudLgdM="
 
 ####################
 # OS Configuration #
@@ -29,6 +34,16 @@ compile-task: &compile-task
     - go mod download
     - go run build.go build all
 
+github-deploy-task: &github-deploy-task
+  provider: releases
+  api_key: ${GITHUB_API_KEY}
+  skip_cleanup: true
+  file:
+    - build/bin/off-proxy
+  on:
+    repo: intelligide/off-api-proxy
+    tags: true
+
 ########
 # Jobs #
 ########
@@ -37,13 +52,12 @@ jobs:
   include:
     - stage: compile
       name: "Compile on Linux"
-      <<: *compile-task
       <<: *linux
+      <<: *compile-task
 
     - name: "Compile on macOS"
       <<: *osx
       <<: *compile-task
-
 
     - name: "Compile on Windows"
       <<: *windows
@@ -55,10 +69,22 @@ jobs:
         - docker
       script:
 #        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build -t off-proxy ./package/docker
+        - docker build -t off-proxy .
         - docker images
 #        - docker tag travis-ci-build-stages-demo $DOCKER_USERNAME/travis-ci-build-stages-demo
 #        - docker push $DOCKER_USERNAME/travis-ci-build-stages-demo
+
+    - stage: deploy
+      <<: *linux
+      <<: *github-deploy-task
+
+    - <<: *osx
+      <<: *github-deploy-task
+
+    - <<: *windows
+      <<: *github-deploy-task
+      file:
+        - build/bin/off-proxy.exe
 
 install:
   - mkdir -p $HOME/src
