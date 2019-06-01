@@ -68,13 +68,13 @@ func main() {
 	if debug {
 		t0 := time.Now()
 		defer func() {
-			log.Println("... build_info completed in", time.Since(t0))
+			log.Println("... build completed in", time.Since(t0))
 		}()
 	}
 
 	builder.AddTargets(targets)
 
-	// Invoking build_info.go with no parameters at all builds everything (incrementally),
+	// Invoking build.go with no parameters at all builds everything (incrementally),
 	// which is what you want for maximum error checking during development.
 	if flag.NArg() == 0 {
 		runCommand("install", "all")
@@ -99,7 +99,7 @@ func runCommand(cmd string, targetName string) {
 		// builder.InstallMultiple([]string { targetName }, tags)
 		builder.Install(targetName, tags)
 
-	case "build_info":
+	case "build":
 		var tags []string
 		if builder.NoUpgrade {
 			tags = []string{"noupgrade"}
@@ -123,7 +123,7 @@ func runCommand(cmd string, targetName string) {
 		fmt.Println(getVersion())
 
 	default:
-		log.Fatalf("Unknown commands %q", cmd)
+		log.Fatalf("Unknown command %q", cmd)
 	}
 }
 
@@ -155,7 +155,7 @@ func getVersion() string {
 		}
 		return ver
 	}
-	// This seems to be a dev build_info.
+	// This seems to be a dev build.
 	return "unknown-dev"
 }
 

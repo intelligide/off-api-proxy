@@ -8,9 +8,15 @@ import (
 type Config struct {
 	Cache CacheConfig `toml:"cache"`
 	Logs LogConfig `toml:"logs"`
+	Http HttpServerConfig `toml:"http"`
 	Provider string `default:"https://world.openfoodfacts.org/" toml:"provider"`
 	PreFilters []string `toml:"pre-filters"`
 	Filters []string `toml:"filters"`
+}
+
+type HttpServerConfig struct {
+	Address string `default:"" toml:"addr"`
+	Port int `default:"8000" toml:"port"`
 }
 
 type CacheConfig struct {
@@ -21,7 +27,7 @@ type CacheConfig struct {
 }
 
 type LogConfig struct {
-	Level int `default:"5" toml:"level"`
+	Level int `default:"6" toml:"level"`
 }
 
 var (
@@ -47,8 +53,17 @@ func newConfig() *Config {
 			MaxAllocMemory: 100,
 		},
 		Logs: LogConfig{
-			Level: 5,
+			Level: 6,
+		},
+		Http: HttpServerConfig {
+			Address: "",
+			Port: 8000,
 		},
 		Provider: "https://world.openfoodfacts.org/",
 	}
+}
+
+func (this *Config) ConfigureBeego(bcfg *beego.Config) {
+	bcfg.Listen.HTTPAddr = GlobalConfig.Http.Address;
+	bcfg.Listen.HTTPPort = GlobalConfig.Http.Port;
 }

@@ -11,11 +11,11 @@ import (
 )
 
 var (
-	// Injected by build_info script
+	// Injected by build script
 	Version = "unknown-dev"
-	Host    = "unknown" // Set by build_info script
-	User    = "unknown" // Set by build_info script
-	Stamp   = "0"       // Set by build_info script
+	Host    = "unknown" // Set by build script
+	User    = "unknown" // Set by build script
+	Stamp   = "0"       // Set by build script
 
 	// Set by init()
 	Date        time.Time
@@ -24,7 +24,7 @@ var (
 	IsBeta      bool
 	LongVersion string
 
-	// Set by Go build_info tags
+	// Set by Go build tags
 	Tags []string
 
 	allowedVersionExp = regexp.MustCompile(`^v\d+\.\d+\.\d+(-[a-z0-9]+)*(\.\d+)*(\+\d+-g[0-9a-f]+)?(-[^\s]+)?$`)
@@ -32,7 +32,7 @@ var (
 
 func init() {
 	if Version != "unknown-dev" {
-		// If not a generic dev build_info, version string should come from git describe
+		// If not a generic dev build, version string should come from git describe
 		if !allowedVersionExp.MatchString(Version) {
 			log.Fatalf("Invalid version string %q;\n\tdoes not match regexp %v", Version, allowedVersionExp)
 		}
@@ -41,14 +41,14 @@ func init() {
 }
 
 func setBuildData() {
-	// Check for a clean release build_info. A release is something like
+	// Check for a clean release build. A release is something like
 	// "v0.1.2", with an optional suffix of letters and dot separated
 	// numbers like "-beta3.47". If there's more stuff, like a plus sign and
 	// a commit hash and so on, then it's not a release. If it has a dash in
-	// it, it's some sort of beta, release candidate or special build_info. If it
-	// has "-rc." in it, like "v0.14.35-rc.42", then it's a candidate build_info.
+	// it, it's some sort of beta, release candidate or special build. If it
+	// has "-rc." in it, like "v0.14.35-rc.42", then it's a candidate build.
 	//
-	// So, every build_info that is not a stable release build_info has IsBeta = true.
+	// So, every build that is not a stable release build has IsBeta = true.
 	// This is used to enable some extra debugging (the deadlock detector).
 	//
 	// Release candidate builds are also "betas" from this point of view and

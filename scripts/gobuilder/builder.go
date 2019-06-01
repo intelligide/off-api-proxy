@@ -49,8 +49,8 @@ func (this *Builder) SetupFlags() {
 	flag.BoolVar(&this.NoUpgrade, "no-upgrade", this.NoUpgrade, "Disable upgrade functionality")
 	flag.BoolVar(&this.Race, "race", this.Race, "Use race detector")
 	flag.StringVar(&this.InstallSuffix, "installsuffix", this.InstallSuffix, "Install suffix, optional")
-	flag.StringVar(&this.PkgDir, "pkgdir", "", "Set -pkgdir parameter for `go build_info`")
-	flag.StringVar(&this.Cc, "cc", os.Getenv("CC"), "Set CC environment variable for `go build_info`")
+	flag.StringVar(&this.PkgDir, "pkgdir", "", "Set -pkgdir parameter for `go build`")
+	flag.StringVar(&this.Cc, "cc", os.Getenv("CC"), "Set CC environment variable for `go build`")
 	flag.BoolVar(&this.DebugBinary, "debug-binary", this.DebugBinary, "Create unoptimized binary to use with delve, set -gcflags='-N -l' and omit -ldflags")
 	flag.BoolVar(&this.Coverage, "coverage", this.Coverage, "Write coverage profile of tests to coverage.txt")
 }
@@ -158,9 +158,9 @@ func (this *Builder) Build(targetName string, tags []string) {
 
 	rmr(this.GetTargetFullBinaryName(target))
 
-	args := []string{"build_info", "-v"}
+	args := []string{"build", "-v"}
 	if len(target.BinaryName) > 0 {
-		args = append(args, "-o", "build_info/bin/" + this.GetTargetFullBinaryName(target));
+		args = append(args, "-o", "build/bin/" + this.GetTargetFullBinaryName(target));
 	}
 	args = this.appendParameters(args, tags, target)
 

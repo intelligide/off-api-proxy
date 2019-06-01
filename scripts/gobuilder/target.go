@@ -20,7 +20,7 @@ type Target struct {
 
 func (this *Target) Validate() {
 	if len(this.BuildPkg) == 0 {
-		log.Fatalln(this.Name + ": Missing build_info pkg.")
+		log.Fatalln(this.Name + ": Missing build pkg.")
 	}
 }
 

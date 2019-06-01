@@ -6,44 +6,60 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/toolbox"
+	"github.com/intelligide/off-api-proxy/internal/config"
 	"github.com/patrickmn/go-cache"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"github.com/intelligide/off-api-proxy/internal/config"
 	"path"
 	"runtime"
 	"time"
 )
 
-func init() {
-	rootCmd.AddCommand(runCmd)
-}
-
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		if config.GlobalConfig.Cache.Enabled {
-			_cache = cache.New(time.Duration(config.GlobalConfig.Cache.Expiration) * time.Minute, time.Duration(config.GlobalConfig.Cache.CleanupInterval) * time.Minute);
-		}
-
-		beego.SetLevel(config.GlobalConfig.Logs.Level)
-
-		memoryMonitorTask := toolbox.NewTask("memory_monitor", "0/5 * * * * *", memoryMonitor)
-		toolbox.AddTask("memory_monitor", memoryMonitorTask)
-		toolbox.StartTask()
-		defer toolbox.StopTask()
-
-		beego.Get("/api/v0/product/:product_id:int.json", ProxyFunc)
-		beego.Get("/api/v0/product/batch.json", Batch)
-		beego.Run()
-	},
+	Run: exec,
 }
 
-var _cache *cache.Cache
+var (
+	verbose bool = false
+	_cache *cache.Cache
+
+)
+
+func init() {
+	rootCmd.AddCommand(runCmd)
+
+	runCmd.Flags().StringVar(&config.GlobalConfig.Http.Address, "address", config.GlobalConfig.Http.Address, "Address")
+	runCmd.Flags().IntVarP(&config.GlobalConfig.Http.Port, "port", "p", config.GlobalConfig.Http.Port, "Port")
+	runCmd.Flags().BoolVarP(&verbose, "verbose",  "v", verbose, "Verbose")
+}
+
+func exec(cmd *cobra.Command, args []string) {
+	if config.GlobalConfig.Cache.Enabled {
+		_cache = cache.New(time.Duration(config.GlobalConfig.Cache.Expiration) * time.Minute, time.Duration(config.GlobalConfig.Cache.CleanupInterval) * time.Minute);
+	}
+
+	if verbose {
+		beego.SetLevel(beego.LevelDebug)
+	} else {
+		beego.SetLevel(config.GlobalConfig.Logs.Level)
+	}
+
+	config.GlobalConfig.ConfigureBeego(beego.BConfig)
+
+	memoryMonitorTask := toolbox.NewTask("memory_monitor", "0/5 * * * * *", memoryMonitor) // every 5s
+	toolbox.AddTask("memory_monitor", memoryMonitorTask)
+	toolbox.StartTask()
+	defer toolbox.StopTask()
+
+	beego.Get("/api/v0/product/:product_id:int.json", ProxyFunc)
+	beego.Get("/api/v0/product/batch.json", Batch)
+	beego.Run()
+}
 
 func ProxyFunc(ctx *context.Context) {
 
@@ -57,8 +73,6 @@ func ProxyFunc(ctx *context.Context) {
 			return
 		}
 	}
-
-
 
 	if ctx.Input.Context.Request.Form == nil {
 		ctx.Input.Context.Request.ParseForm()
@@ -116,11 +130,7 @@ func Batch(ctx *context.Context) {
 func memoryMonitor() error {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
-	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
-	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
-	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
-	fmt.Printf("\tNumGC = %v\n", m.NumGC)
+	beego.Debug(fmt.Sprintf("Alloc = %v MiB\tTotalAlloc = %v MiB\tSys = %v MiB\tNumGC = %v", bToMb(m.Alloc), bToMb(m.TotalAlloc), bToMb(m.Sys), m.NumGC))
 
 	if(uint64(config.GlobalConfig.Cache.MaxAllocMemory) < bToMb(m.Alloc)) {
 		_cache.Flush()
