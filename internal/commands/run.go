@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"openfoodfacts-proxy/internal/config"
+	"github.com/intelligide/off-api-proxy/internal/config"
 	"path"
 	"runtime"
 	"time"

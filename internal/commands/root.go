@@ -2,15 +2,17 @@ package commands
 
 import (
 	"fmt"
+	"github.com/intelligide/off-api-proxy/internal/build_info"
 	"os"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "hugo",
+	Use:   "off-proxy",
 }
 
 func init() {
+	rootCmd.Version = build_info.LongVersion
 }
 
 func Execute() {

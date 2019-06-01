@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"openfoodfacts-proxy/scripts/gobuilder"
+	"github.com/intelligide/off-api-proxy/scripts/gobuilder"
 	"os"
 	"os/exec"
 	"os/user"
@@ -18,10 +18,7 @@ import (
 
 var targets = map[string]gobuilder.Target{
 	"off-proxy": {
-		// The default target for "build", "install", "tar", "zip", "deb", etc.
-		Name:        "syncthing",
-		Description: "Open Source Continuous File Synchronization",
-		BuildPkg:    "openfoodfacts-proxy/cmd",
+		BuildPkg:    "github.com/intelligide/off-api-proxy/cmd/off-proxy",
 		BinaryName:  "off-proxy", // .exe will be added automatically for Windows builds
 		ArchiveFiles: []gobuilder.ArchiveFile{
 			{Src: "{{binary}}", Dst: "{{binary}}", Perm: 0755},
@@ -51,10 +48,10 @@ func init() {
 	sep := '='
 	var ldflags []string
 	ldflags = append(ldflags,
-		fmt.Sprintf("-X github.com/syncthing/syncthing/lib/build.Version%c%s", sep, version),
-		fmt.Sprintf("-X github.com/syncthing/syncthing/lib/build.Stamp%c%d", sep, buildStamp()),
-		fmt.Sprintf("-X github.com/syncthing/syncthing/lib/build.User%c%s", sep, buildUser()),
-		fmt.Sprintf("-X github.com/syncthing/syncthing/lib/build.Host%c%s", sep, buildHost()),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Version%c%s", sep, version),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Stamp%c%d", sep, buildStamp()),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.User%c%s", sep, buildUser()),
+		fmt.Sprintf("-X github.com/intelligide/off-api-proxy/internal/build_info.Host%c%s", sep, buildHost()),
 	)
 }
 
@@ -71,13 +68,13 @@ func main() {
 	if debug {
 		t0 := time.Now()
 		defer func() {
-			log.Println("... build completed in", time.Since(t0))
+			log.Println("... build_info completed in", time.Since(t0))
 		}()
 	}
 
 	builder.AddTargets(targets)
 
-	// Invoking build.go with no parameters at all builds everything (incrementally),
+	// Invoking build_info.go with no parameters at all builds everything (incrementally),
 	// which is what you want for maximum error checking during development.
 	if flag.NArg() == 0 {
 		runCommand("install", "all")
@@ -102,7 +99,7 @@ func runCommand(cmd string, targetName string) {
 		// builder.InstallMultiple([]string { targetName }, tags)
 		builder.Install(targetName, tags)
 
-	case "build":
+	case "build_info":
 		var tags []string
 		if builder.NoUpgrade {
 			tags = []string{"noupgrade"}
@@ -158,7 +155,7 @@ func getVersion() string {
 		}
 		return ver
 	}
-	// This seems to be a dev build.
+	// This seems to be a dev build_info.
 	return "unknown-dev"
 }
 
