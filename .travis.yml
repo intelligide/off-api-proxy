@@ -35,14 +35,16 @@ compile-task: &compile-task
     - go run build.go build all
 
 github-deploy-task: &github-deploy-task
-  provider: releases
-  api_key: ${GITHUB_API_KEY}
-  skip_cleanup: true
-  file:
-    - build/bin/off-proxy
-  on:
-    repo: intelligide/off-api-proxy
-    tags: true
+  script: skip
+  deploy:
+    provider: releases
+    api_key: ${GITHUB_API_KEY}
+    skip_cleanup: true
+    file:
+      - build/bin/off-proxy
+    on:
+      repo: intelligide/off-api-proxy
+      tags: true
 
 ########
 # Jobs #
@@ -83,8 +85,6 @@ jobs:
 
     - <<: *windows
       <<: *github-deploy-task
-      file:
-        - build/bin/off-proxy.exe
 
 install:
   - mkdir -p $HOME/src
