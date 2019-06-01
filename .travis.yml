@@ -36,14 +36,17 @@ compile-task: &compile-task
 jobs:
   include:
     - stage: compile
+      name: "Compile on Linux"
       <<: *compile-task
       <<: *linux
 
-    - <<: *osx
+    - name: "Compile on macOS"
+      <<: *osx
       <<: *compile-task
 
 
-    - <<: *windows
+    - name: "Compile on Windows"
+      <<: *windows
       <<: *compile-task
 
     - stage: package

@@ -2,4 +2,4 @@
 
 set -eu
 
-exec su-exec "${PUID}:${PGID}" /bin/syncthing "$@"
+exec su-exec "${PUID}:${PGID}" /bin/off-proxy "$@"
