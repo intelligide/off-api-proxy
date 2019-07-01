@@ -2,7 +2,6 @@ package build_info
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -31,12 +30,13 @@ var (
 )
 
 func init() {
+	/*
 	if Version != "unknown-dev" {
 		// If not a generic dev build, version string should come from git describe
 		if !allowedVersionExp.MatchString(Version) {
 			log.Fatalf("Invalid version string %q;\n\tdoes not match regexp %v", Version, allowedVersionExp)
 		}
-	}
+	}*/
 	setBuildData()
 }
 
@@ -64,7 +64,7 @@ func setBuildData() {
 	Date = time.Unix(int64(stamp), 0)
 
 	date := Date.UTC().Format("2006-01-02 15:04:05 MST")
-	LongVersion = fmt.Sprintf(`syncthing %s (%s %s-%s) %s@%s %s`, Version, runtime.Version(), runtime.GOOS, runtime.GOARCH, User, Host, date)
+	LongVersion = fmt.Sprintf(` %s (%s %s-%s) %s@%s %s`, Version, runtime.Version(), runtime.GOOS, runtime.GOARCH, User, Host, date)
 
 	if len(Tags) > 0 {
 		LongVersion = fmt.Sprintf("%s [%s]", LongVersion, strings.Join(Tags, ", "))

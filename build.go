@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"github.com/intelligide/off-api-proxy/scripts/gobuilder"
+	"github.com/intelligide/gbuilder/lib/gbuilder"
 	"os"
 	"os/exec"
 	"os/user"
@@ -16,16 +16,16 @@ import (
 	"time"
 )
 
-var targets = map[string]gobuilder.Target{
+var targets = map[string]gbuilder.Target{
 	"off-proxy": {
 		BuildPkg:    "github.com/intelligide/off-api-proxy/cmd/off-proxy",
 		BinaryName:  "off-proxy", // .exe will be added automatically for Windows builds
-		ArchiveFiles: []gobuilder.ArchiveFile{
+		ArchiveFiles: []gbuilder.ArchiveFile{
 			{Src: "build/bin/{{binary}}", Dst: "{{binary}}", Perm: 0755},
 			{Src: "README.md", Dst: "README.txt", Perm: 0644},
 			{Src: "LICENSE", Dst: "LICENSE.txt", Perm: 0644},
 		},
-		InstallationFiles: []gobuilder.ArchiveFile{
+		InstallationFiles: []gbuilder.ArchiveFile{
 			{Src: "{{binary}}", Dst: "deb/usr/bin/{{binary}}", Perm: 0755},
 			{Src: "README.md", Dst: "deb/usr/share/doc/syncthing/README.txt", Perm: 0644},
 			{Src: "LICENSE", Dst: "deb/usr/share/doc/syncthing/LICENSE.txt", Perm: 0644},
@@ -38,7 +38,7 @@ var (
 	version          string
 	debug            = os.Getenv("BUILDDEBUG") != ""
 	extraTags        string
-	builder          = gobuilder.NewBuilder()
+	builder          = gbuilder.NewBuilder()
 )
 
 func init() {
