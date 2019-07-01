@@ -19,9 +19,8 @@ var runCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(runCmd)
 
-	/*
-	runCmd.Flags().StringVar(&config.GlobalConfig.Http.Address, "address", config.GlobalConfig.Http.Address, "Address")
-	runCmd.Flags().IntVarP(&config.GlobalConfig.Http.Port, "port", "p", config.GlobalConfig.Http.Port, "Port")*/
+	runCmd.Flags().StringVar(&beego.BConfig.Listen.HTTPAddr, "address", beego.BConfig.Listen.HTTPAddr, "Address")
+	runCmd.Flags().IntVarP(&beego.BConfig.Listen.HTTPPort, "port", "p", beego.BConfig.Listen.HTTPPort, "Port")
 	runCmd.Flags().BoolVarP(&app.Verbose, "verbose", "v", app.Verbose, "Verbose")
 }
 
