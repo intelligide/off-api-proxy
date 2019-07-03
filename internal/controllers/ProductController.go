@@ -12,7 +12,6 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/intelligide/off-api-proxy/internal/app"
 	"github.com/intelligide/off-api-proxy/internal/conhttp"
-	"github.com/patrickmn/go-cache"
 )
 
 type ProductController struct {
@@ -119,6 +118,9 @@ func (this *ProductController) Batch() {
 
 	q := this.Ctx.Request.Form
 	delete(q, "filters")
+	for idx, _ := range ids {
+		delete(q, "ids[" + strconv.Itoa(idx) + "]")
+	}
 
 	var ch chan conhttp.HTTPResponse = make(chan conhttp.HTTPResponse)
 
@@ -144,8 +146,12 @@ func (this *ProductController) Batch() {
 
 	for _, requestIdx := range thRequests {
 		response := <-ch
-		product := processResponse(response.Id, response.Body)
-		products[requestIdx] = product
+		if response.Err == true {
+			products[requestIdx] = nil
+		} else {
+			product := processResponse(response.Id, response.Body)
+			products[requestIdx] = product
+		}
 	}
 
 	resp := make(map[string]interface{})
@@ -156,45 +162,6 @@ func (this *ProductController) Batch() {
 }
 
 func processResponse(idstr string, body []byte) interface{} {
-/*
-	tst := `{
-   "name":"computers",
-   "description":"List of computer products",
-   "prices":[2400, 2100, 1200, 400.87, 89.90, 150.10],
-   "names":["John Doe", "Jane Doe", "Tom", "Jerry", "Nicolas", "Abby"],
-   "items":[
-      {
-         "id":1,
-         "name":"MacBook Pro 13 inch retina",
-         "price":1350
-      },
-      {
-         "id":2,
-         "name":"MacBook Pro 15 inch retina",
-         "price":1700
-      },
-      {
-         "id":3,
-         "name":"Sony VAIO",
-         "price":1200
-      },
-      {
-         "id":4,
-         "name":"Fujitsu",
-         "price":850
-      },
-      {
-         "id":null,
-         "name":"HP core i3 SSD",
-         "price":850
-      }
-   ]
-}`*/
-
-	// println(gojsonq.New().FromString(tst).Select("name").String())
-	// dat := gojsonq.New().FromString(tst).Select("description", "name", "items.[0].name").Get()
-
-
 	var dat map[string]interface{}
 
 	if err := json.Unmarshal(body, &dat); err != nil {
@@ -203,7 +170,7 @@ func processResponse(idstr string, body []byte) interface{} {
 	}
 
 	if int(dat["status"].(float64)) == 1 && app.Config.CacheEnabled() {
-		_ = app.Cache.Put(idstr, dat, cache.DefaultExpiration)
+		_ = app.Cache.Put(idstr, dat, app.Config.CacheTTL())
 	}
 
 	return dat

@@ -3,6 +3,7 @@ provider = "https://world.openfoodfacts.org/"
 [cache]
     enabled = true
     adapter = "memory"
+    ttl = "1h"
 
     [cache.memory]
         max_memory = 100

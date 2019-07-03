@@ -1,6 +1,9 @@
 package app
 
-import "github.com/astaxie/beego/config"
+import (
+	"github.com/astaxie/beego/config"
+	"time"
+)
 
 type AppConfig struct {
 	BConfig config.Configer
@@ -20,4 +23,9 @@ func (this *AppConfig) CacheEnabled() bool {
 
 func (this *AppConfig) CacheAdapter() string {
 	return this.BConfig.DefaultString("cache.adapter", "memory")
+}
+
+func (this *AppConfig) CacheTTL() time.Duration {
+	d, _ := time.ParseDuration(this.BConfig.DefaultString("cache.ttl", "1h"))
+	return d
 }
