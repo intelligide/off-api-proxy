@@ -21,4 +21,4 @@ RUN apk update && apk upgrade && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 8000
-#ENTRYPOINT ["/bin/entrypoint.sh", "-p", "8000"]
+ENTRYPOINT ["/bin/entrypoint.sh", "-p", "8000"]
