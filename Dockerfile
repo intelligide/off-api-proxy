@@ -9,7 +9,7 @@ RUN rm -f off-proxy && go run build.go -no-upgrade build off-proxy
 
 FROM alpine:3.9
 
-COPY --from=builder /src/build/bin/off-proxy /bin/off-proxy
+COPY --from=builder /src/bin/off-proxy /bin/off-proxy
 COPY --from=builder /src/package/docker/config.toml ./config.toml
 COPY --from=builder /src/package/docker/docker-entrypoint.sh /bin/entrypoint.sh
 RUN chmod +x /bin/entrypoint.sh
