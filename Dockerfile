@@ -17,8 +17,8 @@ RUN chmod +x /bin/entrypoint.sh
 ENV PUID=1000 PGID=1000
 
 RUN apk update && apk upgrade && \
-    apk add --upgrade ca-certificates su-exec libc6-compat && \
+    apk add --upgrade ca-certificates su-exec libc6-compat bash && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 8000
-ENTRYPOINT ["/bin/entrypoint.sh", "-p", "8000"]
+#ENTRYPOINT ["/bin/entrypoint.sh", "-p", "8000"]
