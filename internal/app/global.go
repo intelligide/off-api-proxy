@@ -1,20 +1,19 @@
 package app
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"runtime"
-	"strings"
+    "encoding/json"
+    "fmt"
+    "os"
+    "runtime"
+    "strings"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/cache"
-	_ "github.com/astaxie/beego/cache/memcache"
-	_ "github.com/astaxie/beego/cache/redis"
-	"github.com/astaxie/beego/config"
-	"github.com/astaxie/beego/toolbox"
+    "github.com/astaxie/beego"
+    "github.com/astaxie/beego/cache"
+    _ "github.com/astaxie/beego/cache/memcache"
+    _ "github.com/astaxie/beego/cache/redis"
+    "github.com/astaxie/beego/toolbox"
 
-	_ "github.com/intelligide/off-api-proxy/internal/config"
+    _ "github.com/intelligide/off-api-proxy/internal/config"
 )
 
 var (
@@ -23,15 +22,7 @@ var (
 	Cache cache.Cache
 )
 
-func init() {
-	c, err := config.NewConfig("toml", "configs/config.toml")
-	if err != nil {
-		beego.Emergency(err)
-		os.Exit(1)
-	}
-	Config = AppConfig{BConfig: c}
-
-
+func Init() {
 	if Config.CacheEnabled() {
 		adapter := strings.Trim(Config.CacheAdapter(), " ")
 
