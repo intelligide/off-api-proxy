@@ -2,4 +2,4 @@
 
 set -eu
 
-exec su-exec "${PUID}:${PGID}" /bin/off-proxy "$@"
+exec su-exec "${PUID}:${PGID}" /bin/off-proxy run "$@"
